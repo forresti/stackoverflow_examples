@@ -4,6 +4,14 @@
 #define WIDTH 6
 #define HEIGHT 2
 
+#define CHECK_CUDART(x) do { \
+  cudaError_t res = (x); \
+  if(res != cudaSuccess) { \
+    fprintf(stderr, "CUDART: %s = %d (%s) at (%s:%d)\n", #x, res, cudaGetErrorString(res),__FILE__,__LINE__); \
+    exit(1); \
+  } \
+} while(0) 
+
 __global__ void printGpu_tex(cudaTextureObject_t tex) {
     int tidx = blockIdx.x * blockDim.x + threadIdx.x;
     int tidy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -29,9 +37,9 @@ int main() {
 
     float* d_buffer;
     size_t pitch;
-    cudaMallocPitch(&d_buffer, &pitch, sizeof(float)*width, height);
-    cudaMemset2D(d_buffer, pitch, 0, pitch, height);
-    cudaMemcpy2D(d_buffer, pitch, &h_buffer, sizeof(float)*width, sizeof(float)*width, height, cudaMemcpyHostToDevice);
+    CHECK_CUDART(cudaMallocPitch(&d_buffer, &pitch, sizeof(float)*width, height));
+    CHECK_CUDART(cudaMemset2D(d_buffer, pitch, 0, pitch, height));
+    CHECK_CUDART(cudaMemcpy2D(d_buffer, pitch, &h_buffer, sizeof(float)*width, sizeof(float)*width, height, cudaMemcpyHostToDevice));
     printf("pitch = %d \n", pitch);
 
     //CUDA 5 texture objects: https://developer.nvidia.com/content/cuda-pro-tip-kepler-texture-objects-improve-performance-and-flexibility
@@ -51,13 +59,14 @@ int main() {
     texDesc.readMode = cudaReadModeElementType;
 
     cudaTextureObject_t tex;
-    cudaCreateTextureObject(&tex, &resDesc, &texDesc, NULL);
+    CHECK_CUDART(cudaCreateTextureObject(&tex, &resDesc, &texDesc, NULL));
 
     dim3 grid(1, 1, 1); //assume one small block
     dim3 block(WIDTH, HEIGHT, 1);
     printGpu_tex<<<grid, block>>>(tex);
+    CHECK_CUDART(cudaGetLastError());
     printGpu_vanilla<<<grid, block>>>(d_buffer, pitch/sizeof(float));
-
+    CHECK_CUDART(cudaGetLastError());
     cudaDestroyTextureObject(tex);
     cudaFree(d_buffer);
 }
