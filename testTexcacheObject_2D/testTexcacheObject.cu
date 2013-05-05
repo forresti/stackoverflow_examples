@@ -17,6 +17,7 @@ __global__ void printGpu_tex(cudaTextureObject_t tex) {
     int tidy = blockIdx.y * blockDim.y + threadIdx.y;
     if(tidx < WIDTH && tidy < HEIGHT){
         float x = tex2D<float>(tex, tidy, tidx);
+        //float x = tex2D<float>(tex, float(tidx)+0.5, float(tidy)+0.5);
         printf("tex2D<float>(tex, %d, %d) = %f \n", tidy, tidx, x);
     }
 }
