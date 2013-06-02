@@ -8,12 +8,8 @@ extern "C" {
 #include "helpers.h"
 using namespace std;
 
-#define DPM_DATA
 
 void fftwForward_dpmData(){
-    //int NbFeatures = 32;
-    //int maxRows = 256;
-    //int maxCols = 256;
     int NbFeatures = 1;
     int maxRows = 4;
     int maxCols = 4;
@@ -36,16 +32,10 @@ void fftwForward_dpmData(){
                                                      1, //odist
                                                      FFTW_PATIENT /*flags*/);
 
-
-#ifdef DPM_DATA
-    free(h_in); //memory space used for autotuning setup.
-    h_in = readCsv_1dFloat(maxRows*maxCols*NbFeatures, "../plane_filter_0.csv"); //allocates fresh memory space and reads data from file
-#else
     for(int i=0; i<(maxRows*maxCols*NbFeatures); i++){
         h_in[i] = (float)i; //* rand();
         printf("h_in[%d] = %f \n", i, h_in[i]);
     }
-#endif
     fftwf_execute_dft_r2c(forwardPlan, h_in, h_freq);
 
     for(int i=0; i<(maxRows*maxCols*NbFeatures); i++){
