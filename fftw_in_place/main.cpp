@@ -9,7 +9,7 @@ extern "C" {
 using namespace std;
 
 void fftwForward(bool isInPlace){
-    int howMany = 2;
+    int howMany = 1;
     int maxRows = 2;
     int maxCols = 2;
     int n[2] = {maxRows, maxCols};
@@ -53,9 +53,11 @@ void fftwForward(bool isInPlace){
 int main (int argc, char **argv)
 {
     bool isInPlace = false;
+    printf("  out-of-place experiment: \n"); 
     fftwForward(isInPlace);
 
     isInPlace = true;
+    printf("\n  in-place experiment: \n");
     fftwForward(isInPlace);
 
     return 0;
