@@ -23,18 +23,21 @@ void fftwForward(bool isInPlace){
          h_freq = (fftwf_complex*)malloc(sizeof(fftwf_complex)*maxRows*maxCols*howMany); //out of place
     }
 
+#if 0
     fftwf_plan forwardPlan = fftwf_plan_many_dft_r2c(2, //rank
                                                      n, //dims
                                                      howMany, //howmany
                                                      h_in, //in
-                                                     0, //inembed
+                                                     NULL, //inembed
                                                      howMany, //istride
                                                      1, //idist
                                                      h_freq, //out
-                                                     0, //onembed
+                                                     NULL, //onembed
                                                      howMany, //ostride
                                                      1, //odist
                                                      FFTW_PATIENT /*flags*/);
+#endif
+    fftwf_plan forwardPlan = fftwf_plan_dft_r2c_2d(n[0], n[1], h_in, h_freq, FFTW_PATIENT);
 
     for(int i=0; i<(maxRows*maxCols*howMany); i++){
         h_in[i] = (float)i; 
@@ -44,7 +47,7 @@ void fftwForward(bool isInPlace){
     fftwf_execute_dft_r2c(forwardPlan, h_in, h_freq);
 
     for(int i=0; i<(maxRows*maxCols*howMany); i++){
-        printf("fftw h_freq[%d][0,1] = %0.0f,%0.0f \n", i, h_freq[i][0], h_freq[i][1]);
+        printf("h_freq[%d][0,1] = %0.0f,%0.0f \n", i, h_freq[i][0], h_freq[i][1]);
     }
     free(h_in);
     if(!isInPlace) free(h_freq);
