@@ -8,15 +8,20 @@ extern "C" {
 #include "helpers.h"
 using namespace std;
 
-void fftwForward_dpmData(){
+void fftwForward(bool isInPlace){
     int howMany = 2;
-    int maxRows = 4;
-    int maxCols = 4;
-
+    int maxRows = 2;
+    int maxCols = 2;
     int n[2] = {maxRows, maxCols};
 
-    float* h_in = (float*)malloc(sizeof(float)*maxRows*maxCols*howMany);
-    fftwf_complex* h_freq = (fftwf_complex*)malloc(sizeof(fftwf_complex)*maxRows*maxCols*howMany);
+    float* h_in = (float*)malloc(sizeof(float)*maxRows*maxCols*howMany*2); //*2 is extra space used for in-place version
+    fftwf_complex* h_freq;
+    if(isInPlace){
+        h_freq = reinterpret_cast<fftwf_complex*>(h_in); //in place
+    }
+    else{
+         h_freq = (fftwf_complex*)malloc(sizeof(fftwf_complex)*maxRows*maxCols*howMany); //out of place
+    }
 
     fftwf_plan forwardPlan = fftwf_plan_many_dft_r2c(2, //rank
                                                      n, //dims
@@ -33,21 +38,26 @@ void fftwForward_dpmData(){
 
     for(int i=0; i<(maxRows*maxCols*howMany); i++){
         h_in[i] = (float)i; 
-        printf("h_in[%d] = %f \n", i, h_in[i]);
+        printf("h_in[%d] = %0.0f \n", i, h_in[i]);
     }
 
     fftwf_execute_dft_r2c(forwardPlan, h_in, h_freq);
 
     for(int i=0; i<(maxRows*maxCols*howMany); i++){
-        printf("fftw h_freq[%d][0,1] = %f,%f \n", i, h_freq[i][0], h_freq[i][1]);
+        printf("fftw h_freq[%d][0,1] = %0.0f,%0.0f \n", i, h_freq[i][0], h_freq[i][1]);
     }
     free(h_in);
-    free(h_freq);
+    if(!isInPlace) free(h_freq);
 }
 
 int main (int argc, char **argv)
 {
-    fftwForward_dpmData();
+    bool isInPlace = false;
+    fftwForward(isInPlace);
+
+    isInPlace = true;
+    fftwForward(isInPlace);
+
     return 0;
 }
 
