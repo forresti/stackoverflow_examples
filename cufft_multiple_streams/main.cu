@@ -41,7 +41,7 @@ void cufftForward_streams_experiment(){
     for(int i=0; i<number_of_FFTs; i++){
         CHECK_CUFFT(cufftExecR2C(forwardPlan[i], d_in[i], d_freq[i]));
     }
-    CHECK_CUDART(cudaDeviceSynchronize());
+    //CHECK_CUDART(cudaDeviceSynchronize());
     double forwardTime = read_timer() - start;
     printf("time for %d forward FFTs in streams = %f \n", number_of_FFTs, forwardTime);
     printf("avg time per FFT = %f \n", forwardTime/number_of_FFTs);
