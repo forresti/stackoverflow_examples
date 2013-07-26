@@ -15,17 +15,15 @@ void cufftForward_streams_experiment(){
     // Also, in my real application, I overlap memcpys and FFTs. 
     // But, for the sake of this exercise, I'm just studying the overlap among FFTs. (or lack of overlap, in this case)
 
-    int nRows = 16; //each FFT is tiny; doesn't saturate the GPU
-    int nCols = 16;
+    int nRows = 16; int nCols = 16; //each FFT is tiny; doesn't saturate the GPU
     int number_of_FFTs = 3;
 
     vector<cufftHandle> forwardPlan(number_of_FFTs);
     vector<float*> d_in(number_of_FFTs);
     vector<cufftComplex*> d_freq(number_of_FFTs);
 
-    int nStreams = number_of_FFTs;
-    vector<cudaStream_t> streams(nStreams);
-    for(int s=0; s<nStreams; s++){
+    vector<cudaStream_t> streams(number_of_FFTs);
+    for(int s=0; s<number_of_FFTs; s++){
         CHECK_CUDART(cudaStreamCreate(&streams[s]));
     }
 
@@ -43,6 +41,7 @@ void cufftForward_streams_experiment(){
     for(int i=0; i<number_of_FFTs; i++){
         CHECK_CUFFT(cufftExecR2C(forwardPlan[i], d_in[i], d_freq[i]));
     }
+    CHECK_CUDART(cudaDeviceSynchronize());
     double forwardTime = read_timer() - start;
     printf("time for %d forward FFTs in streams = %f \n", number_of_FFTs, forwardTime);
     printf("avg time per FFT = %f \n", forwardTime/number_of_FFTs);
