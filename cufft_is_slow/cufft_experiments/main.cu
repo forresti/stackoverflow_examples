@@ -8,7 +8,7 @@
 using namespace std;
 
 void cufftForward_dpmData(){
-    int NbFeatures = 32;
+    int depth = 32;
     int maxRows = 1024;
     int maxCols = 1024;
     int nIter = 2;
@@ -27,15 +27,15 @@ void cufftForward_dpmData(){
                   2, //rank
                   n, //dimensions = {maxRows, maxCols}
                   inembed, //inembed
-                  NbFeatures, //istride
+                  depth, //istride
                   1, //idist
                   onembed, //onembed
-                  NbFeatures, //ostride
+                  depth, //ostride
                   1, //odist
                   CUFFT_R2C, //cufftType
-                  NbFeatures /*batch*/));
+                  depth /*batch*/));
     
-    CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*maxRows*cols_padded*NbFeatures)); //cols_padded varies depending on whether in-place or not
+    CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*maxRows*cols_padded*depth)); //cols_padded varies depending on whether in-place or not
     d_freq = reinterpret_cast<cufftComplex*>(d_in);
     
     double start = read_timer();

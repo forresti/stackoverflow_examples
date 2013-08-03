@@ -10,7 +10,7 @@ using namespace std;
 
 
 void fftwForward_dpmData(){
-    int NbFeatures = 32;
+    int depth = 32;
     int maxRows = 512;
     int maxCols = 512;
     int nIter = 8; //equivalent to 1024x1024x32 for 2 iterations
@@ -23,21 +23,21 @@ void fftwForward_dpmData(){
     int inembed[2] = {maxRows, 2*(maxCols/2 + 1)};
     int onembed[2] = {maxRows, (maxCols/2 + 1)}; //default -- equivalent ot onembed=NULL
 
-    float* h_in = (float*)malloc(sizeof(float)*maxRows*cols_padded*NbFeatures);
-    memset(h_in, 0, sizeof(float)*maxRows*cols_padded*NbFeatures);
+    float* h_in = (float*)malloc(sizeof(float)*maxRows*cols_padded*depth);
+    memset(h_in, 0, sizeof(float)*maxRows*cols_padded*depth);
 
     fftwf_complex* h_freq = reinterpret_cast<fftwf_complex*>(h_in); //in-place version
 
     fftwf_plan forwardPlan = fftwf_plan_many_dft_r2c(2, //rank
                                                      n, //dims -- this doesn't include zero-padding
-                                                     NbFeatures, //howmany
+                                                     depth, //howmany
                                                      h_in, //in
                                                      inembed, //NULL, //inembed
-                                                     NbFeatures, //istride
+                                                     depth, //istride
                                                      1, //idist
                                                      h_freq, //out
                                                      onembed, //NULL, //onembed
-                                                     NbFeatures, //ostride
+                                                     depth, //ostride
                                                      1, //odist
                                                      FFTW_PATIENT /*flags*/);
 
