@@ -13,7 +13,7 @@ void fftwForward_dpmData(){
     int NbFeatures = 32;
     int maxRows = 512;
     int maxCols = 512;
-    int nIter = 10;
+    int nIter = 8; //equivalent to 1024x1024x32 for 2 iterations
 
     int n[2] = {maxRows, maxCols};
     int cols_padded;

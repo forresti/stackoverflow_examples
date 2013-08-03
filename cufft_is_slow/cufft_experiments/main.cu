@@ -11,7 +11,7 @@ void cufftForward_dpmData(){
     int NbFeatures = 32;
     int maxRows = 1024;
     int maxCols = 1024;
-    int nIter = 10;
+    int nIter = 2;
 
     int n[2] = {maxRows, maxCols};
     int cols_padded;
