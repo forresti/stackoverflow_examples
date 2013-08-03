@@ -34,47 +34,18 @@ void cufftForward_dpmData(){
                   1, //odist
                   CUFFT_R2C, //cufftType
                   NbFeatures /*batch*/));
-    //CHECK_CUFFT(cufftSetCompatibilityMode(forwardPlan, CUFFT_COMPATIBILITY_FFTW_ALL));
     
-    float* h_in = (float*)malloc(sizeof(float)*maxRows*cols_padded*NbFeatures); //note cols_padded instead of maxCols
-    memset(h_in, 0, sizeof(float)*maxRows*cols_padded*NbFeatures);
-
-
-#if 0
-    for(int row=0; row<maxRows; row++){
-        for(int col=0; col<maxCols; col++){ //iterate through maxCols, but multiply row by cols_padded.
-            for(int depth=0; depth<NbFeatures; depth++){
-                int idx = row * cols_padded * NbFeatures +
-                          col * NbFeatures +
-                          depth;
-                h_in[idx] = row * maxCols * NbFeatures + //using maxCols instead of cols_padded here, so that input data is same for in-place and out-of-place versions
-                            col * NbFeatures +
-                            depth;
-//                printf("h_in[row=%d, col=%d, depth=%d] = %f \n", row, col, depth, h_in[idx]);
-            }
-        }
-    }
-#endif
-    cufftComplex* h_freq = reinterpret_cast<cufftComplex*>(h_in); 
     CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*maxRows*cols_padded*NbFeatures)); //cols_padded varies depending on whether in-place or not
-//    CHECK_CUDART(cudaMemcpy(d_in, h_in, sizeof(float)*maxRows*cols_padded*NbFeatures, cudaMemcpyHostToDevice));
     d_freq = reinterpret_cast<cufftComplex*>(d_in);
     
     double start = read_timer();
     for(int i=0; i<nIter; i++){
 
         CHECK_CUFFT(cufftExecR2C(forwardPlan, d_in, d_freq));
-        CHECK_CUDART(cudaDeviceSynchronize());
     }
+    CHECK_CUDART(cudaDeviceSynchronize());
     double responseTime = read_timer() - start;
     printf("did %d FFT calls in %f ms \n", nIter, responseTime);
-
-//    CHECK_CUDART(cudaMemcpy(h_freq, d_freq, sizeof(float)*maxRows*cols_padded*NbFeatures, cudaMemcpyDeviceToHost)); //TODO: copy exactly the right amount of space to host
-
-    for(int i=0; i<(maxRows*maxCols*NbFeatures); i++){
-//         printf("    cufft h_freq[%d].(x,y) = %0.0f, %0.0f \n", i, h_freq[i].x, h_freq[i].y); //for StackOverflow 
-        //printf("cufft h_freq[%d].(x,y) = %0.10f,%0.10f \n", i, h_freq[i].x, h_freq[i].y);
-    }
 
     //TODO: free memory
 }
