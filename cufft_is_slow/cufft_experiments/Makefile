@@ -1,6 +1,3 @@
-#Author: Forrest Iandola iandola1@illinois.edu
-#Created: 1/24/10
-#Modified: 9/6/12
 
 OBJS = main.o  helpers.o
 EXENAME = main
