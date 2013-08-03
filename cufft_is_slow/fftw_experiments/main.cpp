@@ -11,8 +11,8 @@ using namespace std;
 
 void fftwForward_dpmData(){
     int NbFeatures = 32;
-    int maxRows = 256;
-    int maxCols = 256;
+    int maxRows = 512;
+    int maxCols = 512;
     int nIter = 10;
 
     int n[2] = {maxRows, maxCols};
