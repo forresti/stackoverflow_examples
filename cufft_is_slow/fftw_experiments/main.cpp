@@ -44,6 +44,7 @@ void fftwForward_dpmData(){
 
 
     double start = read_timer();
+#pragma omp parallel for
     for(int i=0; i<nIter; i++){
 
         fftwf_execute_dft_r2c(forwardPlan, h_in, h_freq);

@@ -6,9 +6,9 @@ OBJS = main.o  helpers.o
 EXENAME = main
 
 CC = g++
-CCOPTS = -c  -g -O3
+CCOPTS = -c  -g -O3 -fopenmp
 LINK = g++
-LINKOPTS = -lfftw3f
+LINKOPTS = -lfftw3f -lgomp
 
 all : $(EXENAME)
 
