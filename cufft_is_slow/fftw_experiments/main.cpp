@@ -15,15 +15,27 @@ void fftwForward_experiment(){
     int nCols = 256;
     int nIter = 8; 
     int n[2] = {nRows, nCols};
+    int cols_padded;
 
+    #ifdef OUT_OF_PLACE
     //if nCols is even, cols_padded = (nCols+2). if nCols is odd, cols_padded = (nCols+1)
     int cols_padded = 2*(nCols/2 + 1); //allocate this width, but tell FFTW that it's nCols width
     int inembed[2] = {nRows, 2*(nCols/2 + 1)};
-    int onembed[2] = {nRows, (nCols/2 + 1)}; //default -- equivalent ot onembed=NULL
+    int onembed[2] = {nRows, (nCols/2 + 1)}; //default -- equivalent of onembed=NULL
+    #else
+    cols_padded = nCols;
+    int inembed[2] = {nRows, nCols};
+    int onembed[2] = {nRows, (nCols/2 + 1)}; //default -- equivalent of onembed=NULL
+    #endif
 
     float* h_in = (float*)malloc(sizeof(float)*nRows*cols_padded*depth);
     memset(h_in, 0, sizeof(float)*nRows*cols_padded*depth);
+
+    #ifdef OUT_OF_PLACE
     fftwf_complex* h_freq = reinterpret_cast<fftwf_complex*>(h_in); //in-place version
+    #else
+    fftwf_complex* h_freq = (fftwf_complex*)malloc(sizeof(fftwf_complex)*nRows*cols_padded*depth);
+    #endif
 
     fftwf_plan forwardPlan = fftwf_plan_many_dft_r2c(2, //rank
                                                      n, //dims -- this doesn't include zero-padding
