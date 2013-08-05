@@ -8,14 +8,13 @@ extern "C" {
 #include "helpers.h"
 using namespace std;
 
-
+#define OUT_OF_PLACE
 void fftwForward_experiment(){
     int depth = 32;
     int nRows = 256;
     int nCols = 256;
     int nIter = 8; 
     int n[2] = {nRows, nCols};
-    int cols_padded;
 
     #ifdef OUT_OF_PLACE
     //if nCols is even, cols_padded = (nCols+2). if nCols is odd, cols_padded = (nCols+1)
@@ -23,7 +22,7 @@ void fftwForward_experiment(){
     int inembed[2] = {nRows, 2*(nCols/2 + 1)};
     int onembed[2] = {nRows, (nCols/2 + 1)}; //default -- equivalent of onembed=NULL
     #else
-    cols_padded = nCols;
+    int cols_padded = nCols;
     int inembed[2] = {nRows, nCols};
     int onembed[2] = {nRows, (nCols/2 + 1)}; //default -- equivalent of onembed=NULL
     #endif
