@@ -9,23 +9,22 @@ using namespace std;
 
 void cufftForward_dpmData(){
     int depth = 32;
-    int maxRows = 1024;
-    int maxCols = 1024;
-    int nIter = 2;
+    int nRows = 256;
+    int nCols = 256;
+    int nIter = 8;
+    int n[2] = {nRows, nCols};
 
-    int n[2] = {maxRows, maxCols};
-    int cols_padded;
-    //if maxCols is even, cols_padded = (maxCols+2). if maxCols is odd, cols_padded = (maxCols+1)
-    cols_padded = 2*(maxCols/2 + 1); //allocate this width, but tell FFTW that it's maxCols width
-    int inembed[2] = {maxRows, 2*(maxCols/2 + 1)};
-    int onembed[2] = {maxRows, (maxCols/2 + 1)}; //default -- equivalent ot onembed=NULL in FFTW
+    //if nCols is even, cols_padded = (nCols+2). if nCols is odd, cols_padded = (nCols+1)
+    int cols_padded = 2*(nCols/2 + 1); //allocate this width, but tell FFTW that it's nCols width
+    int inembed[2] = {nRows, 2*(nCols/2 + 1)};
+    int onembed[2] = {nRows, (nCols/2 + 1)}; //default -- equivalent ot onembed=NULL in FFTW
 
     cufftHandle forwardPlan; 
     float* d_in; cufftComplex* d_freq; 
 
     CHECK_CUFFT(cufftPlanMany(&forwardPlan,
                   2, //rank
-                  n, //dimensions = {maxRows, maxCols}
+                  n, //dimensions = {nRows, nCols}
                   inembed, //inembed
                   depth, //istride
                   1, //idist
@@ -35,7 +34,7 @@ void cufftForward_dpmData(){
                   CUFFT_R2C, //cufftType
                   depth /*batch*/));
     
-    CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*maxRows*cols_padded*depth)); //cols_padded varies depending on whether in-place or not
+    CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*nRows*cols_padded*depth)); //cols_padded varies depending on whether in-place or not
     d_freq = reinterpret_cast<cufftComplex*>(d_in);
     
     double start = read_timer();
