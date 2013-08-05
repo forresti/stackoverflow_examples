@@ -34,7 +34,7 @@ void cufftForward_dpmData(){
                   CUFFT_R2C, //cufftType
                   depth /*batch*/));
     
-    CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*nRows*cols_padded*depth)); //cols_padded varies depending on whether in-place or not
+    CHECK_CUDART(cudaMalloc(&d_in, sizeof(float)*nRows*cols_padded*depth)); 
     d_freq = reinterpret_cast<cufftComplex*>(d_in);
     
     double start = read_timer();
