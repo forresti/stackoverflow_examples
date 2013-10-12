@@ -10,8 +10,8 @@ using namespace std;
 #define OUT_OF_PLACE
 void cufftForward_experiment(){
     int depth = 32;
-    int nRows = 256;
-    int nCols = 256;
+    int nRows = 1024;
+    int nCols = 1024;
     int nIter = 8;
     int n[2] = {nRows, nCols};
 
