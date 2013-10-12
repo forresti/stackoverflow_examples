@@ -20,7 +20,10 @@ void gradient_builtin(array input){
         gradX(span, span, ch) = gradX_1ch; //output is some goofy thing that sorta has shadows.
         gradY(span, span, ch) = gradY_1ch; //output looks ok
     }
-    
+   
+    gradX = abs(gradX); //do 'abs' so that img makes sense as [0 to 255]
+    gradY = abs(gradY);
+ 
     saveimage("gradX_arrayfire.jpg", gradX);
     saveimage("gradY_arrayfire.jpg", gradY);
 }
