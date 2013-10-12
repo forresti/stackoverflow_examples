@@ -21,8 +21,8 @@ void gradient_builtin(array input){
         gradY(span, span, ch) = gradY_1ch; //output looks ok
     }
    
-    gradX = abs(gradX); //do 'abs' so that img makes sense as [0 to 255]
-    gradY = abs(gradY);
+    gradX = abs(gradX)*2; //do 'abs' so that img makes sense as [0 to 255]
+    gradY = abs(gradY)*2;
  
     saveimage("gradX_arrayfire.jpg", gradX);
     saveimage("gradY_arrayfire.jpg", gradY);
