@@ -21,14 +21,15 @@ void gradient_builtin(array input){
         gradY(span, span, ch) = gradY_1ch; //output looks ok
     }
     
-    saveimage("gradX.jpg", gradX);
-    saveimage("gradY.jpg", gradY);
+    saveimage("gradX_arrayfire.jpg", gradX);
+    saveimage("gradY_arrayfire.jpg", gradY);
 }
 
 int main(int argc, char** argv) {
     try {
         info();
-        array input = loadimage("input.jpg", true); //iscolor='true'
+        //array input = loadimage("input.jpg", true); //iscolor='true'
+        array input = loadimage("../Lena.jpg", true); //iscolor='true'
         printf("size of input: %d, %d, %d\n", input.dims(0), input.dims(1), input.dims(2));
 
         gradient_builtin(input);
