@@ -16,12 +16,14 @@ void gradient_reference(Mat img){
     int height = img.rows;
 
     img.convertTo(img, CV_32FC3); //silly to promote to float, but this is just a sanity check impl. 
-    Mat gradX(width, height, 3, CV_32FC3);
-    Mat gradY(width, height, 3, CV_32FC3);
+    Mat gradX(width, height, CV_32FC3);
+    Mat gradY(width, height, CV_32FC3);
 
     for(int y=0; y<height; y++){
         for(int x=0; x<width; x++){
-            for(int channel=0; channel<3; channel++){
+            //for(int channel=0; channel<3; channel++)
+            int channel = 0;
+            {
                 gradX.at<cv::Vec3f>(y,x)[channel] = img.at<cv::Vec3f>(y,x)[channel]; //test
                 //gradX.at<cv::Vec3f>(y,x)[channel] = fabs(img.at<cv::Vec3f>(y, clamp(x+1, 0, width-1))[channel] - 
                 //                                         img.at<cv::Vec3f>(y, clamp(x-1, 0, width-1))[channel]); 
