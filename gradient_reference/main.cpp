@@ -38,7 +38,8 @@ void gradient_reference(Mat img){
 
 int main (int argc, char **argv)
 {
-    Mat img = imread("../Lena.jpg");
+    Mat img = imread("../car.jpg");
+    //Mat img = imread("../Lena.jpg");
     gradient_reference(img);
 
     return 0;
